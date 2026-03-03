@@ -147,19 +147,59 @@
             transition: color 0.2s;
         }
 
-        .breadcrumb a:hover {
-            color: #fff;
-        }
-
-        .breadcrumb span {
-            color: #64748b;
-        }
-
-        /* FOLDER GRID */
-        .folder-grid {
+        /* HEADER AREA */
+        .page-header {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            border-radius: 12px;
+            padding: 20px 24px;
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 24px;
+            grid-template-columns: 1fr auto 1fr;
+            align-items: center;
+            color: white;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            margin-bottom: 24px;
+        }
+
+        .page-header h1 {
+            text-align: center;
+            font-size: 16px;
+            font-weight: 900;
+            letter-spacing: 0.5px;
+            color: #f97316;
+            text-transform: uppercase;
+            margin: 0;
+            line-height: 1.1;
+        }
+
+        .header-date {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: #cbd5e1;
+            justify-self: end;
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            width: 40px;
+            height: 40px;
+            border: none;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            cursor: pointer;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #64748b;
+            margin-bottom: 24px;
         }
 
         .folder-card {
@@ -274,26 +314,7 @@
     <th:block th:replace="~{fragments/employee-sidebar :: sidebar}"></th:block>
 
     <main class="main-content">
-        <!-- Top Bar -->
-        <div class="top-bar">
-            <div class="breadcrumb">
-                <a href="/employee/dashboard">Home</a>
-                <span>/</span>
-                <span style="color: #fff;">FMS Folders</span>
-            </div>
-            <div class="user-profile-mini" style="display: flex; align-items: center; gap: 12px;">
-                <div class="avatar-mini"
-                    style="width: 32px; height: 32px; background: #6366f1; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600;">
-                    <span th:text="${#strings.substring(employeeName,0,1)}">E</span>
-                </div>
-                <span th:text="${employeeName}">Employee</span>
-            </div>
-        </div>
 
-        <div class="page-header" style="margin-bottom: 32px;">
-            <h1 style="font-size: 28px; font-weight: 700; color: #1e293b; margin-bottom: 8px;">FMS Workspaces</h1>
-            <p style="color: #64748b; margin: 0;">Access your assigned process folders and workflows.</p>
-        </div>
 
         <div class="folder-grid">
             <!-- Dynamic Folders would be ideal, but keeping static for now as per existing code -->

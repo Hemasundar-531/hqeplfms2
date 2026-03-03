@@ -113,19 +113,14 @@
 
         /* HEADER - Enhanced UI/UX */
         .page-header {
-            background:
-                radial-gradient(circle at 15% 10%, rgba(249, 115, 22, 0.18), transparent 38%),
-                radial-gradient(circle at 90% 0%, rgba(59, 130, 246, 0.20), transparent 42%),
-                linear-gradient(135deg, #0f172a 0%, #1e293b 55%, #334155 100%);
-            border-radius: 16px;
-            padding: 14px 18px;
-            display: flex;
-            justify-content: space-between;
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            border-radius: 12px;
+            padding: 20px 24px;
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
             align-items: center;
-            gap: 14px;
             color: white;
-            border: 1px solid rgba(148, 163, 184, 0.24);
-            box-shadow: 0 14px 30px rgba(15, 23, 42, 0.28);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
             margin-bottom: 12px;
         }
 
@@ -152,15 +147,13 @@
         }
 
         .page-header h1 {
-            font-size: 18px;
+            text-align: center;
+            font-size: 16px;
             font-weight: 900;
             letter-spacing: 0.5px;
-            color: #f8fafc;
+            color: #f97316;
             text-transform: uppercase;
             margin: 0;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
             line-height: 1.1;
         }
 
@@ -174,17 +167,12 @@
         }
 
         .header-date {
-            display: inline-flex;
+            display: flex;
             align-items: center;
             gap: 8px;
             font-size: 12px;
-            color: #e2e8f0;
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(148, 163, 184, 0.35);
-            padding: 8px 12px;
-            border-radius: 12px;
-            backdrop-filter: blur(6px);
-            white-space: nowrap;
+            color: #cbd5e1;
+            justify-self: end;
         }
 
         .header-date strong {
@@ -211,7 +199,7 @@
         /* DASHBOARD GRID */
         .dashboard-grid {
             display: grid;
-            grid-template-columns: 220px 1fr 1.25fr;
+            grid-template-columns: 280px 1fr 1.25fr;
             gap: 10px;
             margin-bottom: 16px;
             align-items: stretch;
@@ -226,8 +214,8 @@
             background: white;
             border-radius: 12px;
             border: 1px solid #e2e8f0;
-            padding: 10px 12px;
-            box-shadow: var(--shadow);
+            padding: 18px 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
             height: 100%;
             align-self: stretch;
         }
@@ -253,12 +241,12 @@
         }
 
         .client-filter h3 {
-            font-size: 12px;
-            font-weight: 900;
+            font-size: 11px;
+            font-weight: 800;
             text-transform: uppercase;
-            letter-spacing: 1.5px;
-            color: #1e293b;
-            margin-bottom: 10px;
+            letter-spacing: 1.2px;
+            color: #64748b;
+            margin-bottom: 20px;
         }
 
         .client-filter label {
@@ -340,9 +328,10 @@
         }
 
         .chart-center-label .value {
-            font-size: 34px;
+            font-size: 42px;
             font-weight: 900;
-            color: #1e293b;
+            color: #0f172a;
+            line-height: 1;
         }
 
         /* STATS GRID */
@@ -355,19 +344,25 @@
 
         .stat-card {
             background: #fff;
-            border-radius: 14px;
+            border-radius: 12px;
             border: 1px solid #e2e8f0;
-            padding: 12px 14px;
-            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
-            border-top: 3px solid #6366f1;
+            padding: 16px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+            border-left: 4px solid #6366f1;
             transition: all 0.2s ease;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: flex-start;
-            gap: 2px;
-            cursor: default;
-            min-height: 104px;
+            min-height: 100px;
+            position: relative;
+        }
+
+        .stat-content {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            width: 100%;
         }
 
         .stat-head {
@@ -378,16 +373,16 @@
         }
 
         .stat-icon {
-            width: 22px;
-            height: 22px;
-            border-radius: 7px;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            font-size: 12px;
-            line-height: 1;
-            border: 1px solid transparent;
+            font-size: 14px;
             background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            flex-shrink: 0;
         }
 
         .stats-grid .stat-card:nth-child(1) .stat-icon {
@@ -432,72 +427,76 @@
         }
 
         .stat-card .stat-title {
-            font-size: 11px;
+            font-size: 10px;
             font-weight: 800;
             text-transform: uppercase;
-            letter-spacing: 0.9px;
-            color: #334155;
+            letter-spacing: 1px;
+            color: #64748b;
             margin-bottom: 2px;
-            line-height: 1.15;
-            word-break: break-word;
         }
 
         .stat-card .stat-value {
-            font-size: 24px;
-            font-weight: 900;
-            color: #0f172a;
-            line-height: 1;
-            text-shadow: 0 1px 0 rgba(255, 255, 255, 0.45);
+            font-size: 28px;
+            font-weight: 800;
+            color: #1e293b;
+            line-height: 1.1;
         }
 
         /* ACTION BAR */
         .action-bar {
             display: flex;
-            justify-content: flex-start;
+            justify-content: space-between;
             align-items: center;
+            gap: 12px;
+            margin: 16px 0;
+            padding: 0;
+            background: transparent;
+            border: none;
+            box-shadow: none;
+        }
+
+        .action-bar-left {
+            display: flex;
             gap: 10px;
-            margin: 10px 0 18px;
-            padding: 10px 12px;
-            background: rgba(255, 255, 255, 0.86);
-            border: 1px solid #d7e3f0;
-            border-radius: 14px;
-            box-shadow: var(--shadow);
+            align-items: center;
         }
 
         .action-btn {
             display: flex;
             align-items: center;
-            gap: 6px;
-            padding: 9px 14px;
+            gap: 8px;
+            padding: 10px 18px;
             border-radius: 10px;
-            font-size: 10px;
-            font-weight: 800;
+            font-size: 11px;
+            font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.7px;
-            border: none;
+            letter-spacing: 0.5px;
+            border: 1px solid #e2e8f0;
             cursor: pointer;
             transition: all 0.2s ease;
-            box-shadow: var(--shadow);
+            background: white;
+            color: #1e293b;
         }
 
         .action-btn:hover {
-            transform: translateY(-1px);
-            box-shadow: var(--shadow-lg);
-        }
-
-        .action-btn:active {
-            transform: scale(0.98);
+            background: #f8fafc;
+            border-color: #cbd5e1;
         }
 
         .action-btn.primary {
-            background: linear-gradient(135deg, #1e3a8a, #1e293b);
+            background: #1e293b;
             color: white;
+            border-color: #1e293b;
+        }
+
+        .action-btn.primary:hover {
+            background: #0f172a;
         }
 
         .action-btn.secondary {
             background: white;
-            color: #243349;
-            border: 1px solid #d6e1ef;
+            color: #1e293b;
+            border: 1px solid #e2e8f0;
         }
 
         .action-btn svg {
@@ -526,25 +525,25 @@
         /* SEARCH BAR */
         .search-wrapper {
             position: relative;
-            margin-right: auto;
-            min-width: 270px;
+            min-width: 320px;
         }
 
         .search-input {
-            padding: 9px 12px 9px 36px;
-            border-radius: 11px;
-            border: 1px solid #d6e1ef;
+            padding: 12px 16px 12px 42px;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
             background: white;
-            font-size: 12px;
-            font-weight: 600;
+            font-size: 13px;
+            font-weight: 500;
             width: 100%;
             outline: none;
             transition: all 0.2s ease;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
         }
 
         .search-input:focus {
-            border-color: #2563eb;
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
         }
 
         .search-icon {
@@ -1099,17 +1098,10 @@
                             <line x1="3" y1="18" x2="21" y2="18" />
                         </svg>
                     </button>
-                    <div class="title-wrap">
-                        <div class="header-kicker">Flow Management System</div>
-                        <h1
-                            th:text="${(employeeName != null ? #strings.toUpperCase(employeeName) + '''S ' : '') + 'FMS FOLDER'}">
-                            EMPLOYEE'S FMS FOLDER</h1>
-                        <div class="header-subtitle">
-                            Active workspace:
-                            <span th:text="${currentFolder != null ? currentFolder.name : 'Folder'}">Folder</span>
-                        </div>
-                    </div>
                 </div>
+                <h1
+                    th:text="${(employeeName != null ? #strings.toUpperCase(employeeName) + '''S ' : '') + 'DASHBOARD'}">
+                    EMPLOYEE'S DASHBOARD</h1>
                 <div class="header-date">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
@@ -1117,8 +1109,7 @@
                         <line x1="8" y1="2" x2="8" y2="6"></line>
                         <line x1="3" y1="10" x2="21" y2="10"></line>
                     </svg>
-                    <span>Date range</span>
-                    <strong>Today</strong>
+                    <span>Select date range</span>
                 </div>
             </div>
 
@@ -1135,7 +1126,7 @@
             <div class="dashboard-grid">
                 <!-- CLIENT FILTER -->
                 <div class="client-filter">
-                    <h3 class="section-title"><span class="title-icon">👥</span>Client Filter</h3>
+                    <h3 class="section-title">CLIENT FILTER</h3>
                     <div th:if="${clientProjectMap != null}" th:each="clientEntry : ${clientProjectMap}">
                         <label>
                             <input type="checkbox" checked th:value="${clientEntry.key}">
@@ -1151,13 +1142,13 @@
                 <!-- CHART CARD -->
                 <div class="chart-card">
                     <div class="chart-card-header">
-                        <h2 class="section-title"><span class="title-icon">📊</span>Task Distribution</h2>
+                        <h2 class="section-title">TASK DISTRIBUTION</h2>
                         <div class="icon-box">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2">
-                                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
-                                <line x1="8" y1="21" x2="16" y2="21"></line>
-                                <line x1="12" y1="17" x2="12" y2="21"></line>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="18" y1="20" x2="18" y2="10"></line>
+                                <line x1="12" y1="20" x2="12" y2="4"></line>
+                                <line x1="6" y1="20" x2="6" y2="14"></line>
                             </svg>
                         </div>
                     </div>
@@ -1174,70 +1165,94 @@
 
                 <!-- STATS GRID -->
                 <div class="stats-grid">
-                    <div class="stat-card" style="border-top-color: #6366f1;">
-                        <div class="stat-head">
+                    <div class="stat-card" style="border-left-color: #3b82f6;">
+                        <div class="stat-content">
                             <div class="stat-title">Total Tasks</div>
-                            <span class="stat-icon">📦</span>
+                            <div class="stat-value"
+                                th:text="${dashboardStats != null and dashboardStats.get('totalTasks') != null ? dashboardStats.get('totalTasks') : 0}">
+                                10</div>
                         </div>
-                        <div class="stat-value"
-                            th:text="${dashboardStats != null and dashboardStats.get('totalTasks') != null ? dashboardStats.get('totalTasks') : 0}">
-                            10</div>
                     </div>
-                    <div class="stat-card" style="border-top-color: #10b981;">
-                        <div class="stat-head">
+                    <div class="stat-card" style="border-left-color: #10b981;">
+                        <div class="stat-content">
                             <div class="stat-title">On Time</div>
-                            <span class="stat-icon">✅</span>
+                            <div class="stat-value"
+                                th:text="${dashboardStats != null and dashboardStats.get('onTime') != null ? dashboardStats.get('onTime') : 0}">
+                                3</div>
                         </div>
-                        <div class="stat-value" style="color:#10b981;"
-                            th:text="${dashboardStats != null and dashboardStats.get('onTime') != null ? dashboardStats.get('onTime') : 0}">
-                            3</div>
                     </div>
-                    <div class="stat-card" style="border-top-color: #ef4444;">
-                        <div class="stat-head">
+                    <div class="stat-card" style="border-left-color: #ef4444;">
+                        <div class="stat-content">
                             <div class="stat-title">Overdue</div>
-                            <span class="stat-icon">⏰</span>
+                            <div class="stat-value"
+                                th:text="${dashboardStats != null and dashboardStats.get('overdue') != null ? dashboardStats.get('overdue') : 0}">
+                                0</div>
                         </div>
-                        <div class="stat-value" style="color:#ef4444;"
-                            th:text="${dashboardStats != null and dashboardStats.get('overdue') != null ? dashboardStats.get('overdue') : 0}">
-                            0</div>
                     </div>
-                    <div class="stat-card" style="border-top-color: #f59e0b;">
-                        <div class="stat-head">
+                    <div class="stat-card" style="border-left-color: #f59e0b;">
+                        <div class="stat-content">
                             <div class="stat-title">Delayed</div>
-                            <span class="stat-icon">⚠️</span>
+                            <div class="stat-value"
+                                th:text="${dashboardStats != null and dashboardStats.get('delayed') != null ? dashboardStats.get('delayed') : 0}">
+                                5</div>
                         </div>
-                        <div class="stat-value" style="color:#f59e0b;"
-                            th:text="${dashboardStats != null and dashboardStats.get('delayed') != null ? dashboardStats.get('delayed') : 0}">
-                            5</div>
                     </div>
-
-                    <div class="stat-card" style="border-top-color: #8b5cf6;">
-                        <div class="stat-head">
-                            <div class="stat-title">ATS Score</div>
-                            <span class="stat-icon">🎯</span>
+                    <div class="stat-card" style="border-left-color: #3b82f6;">
+                        <div class="stat-content">
+                            <div class="stat-title">In Progress</div>
+                            <div class="stat-value"
+                                th:text="${dashboardStats != null and dashboardStats.get('inProgress') != null ? dashboardStats.get('inProgress') : 0}">
+                                2</div>
                         </div>
-                        <div class="stat-value" style="color:#8b5cf6;"
-                            th:text="${dashboardStats != null and dashboardStats.get('atsScore') != null ? dashboardStats.get('atsScore') : '-'}">
-                            92%</div>
+                    </div>
+                    <div class="stat-card" style="border-left-color: #f97316;">
+                        <div class="stat-content">
+                            <div class="stat-title">ATS Score</div>
+                            <div class="stat-value"
+                                th:text="${dashboardStats != null and dashboardStats.get('atsScore') != null ? dashboardStats.get('atsScore') : '-'}">
+                                92%</div>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <!-- ACTION BAR -->
             <div class="action-bar">
+                <div class="action-bar-left">
+                    <button class="action-btn secondary">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+                        </svg>
+                        FILTER
+                    </button>
+                    <button class="action-btn secondary">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 8H3"></path>
+                            <path d="M10 12V16"></path>
+                            <path d="M14 12V16"></path>
+                            <path d="M19 8v12a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V8"></path>
+                            <path d="M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v3H9V5z"></path>
+                        </svg>
+                        BULK ASSIGN
+                    </button>
+                    <button class="action-btn primary">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                        ASSIGN
+                    </button>
+                </div>
                 <div class="search-wrapper">
-                    <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                         <circle cx="11" cy="11" r="8"></circle>
                         <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                     </svg>
                     <input type="text" class="search-input" placeholder="Search tasks...">
                 </div>
-                <!-- <button class="action-btn secondary">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
-                    </svg>
-                    Filter
-                </button> -->
             </div>
 
             <!-- FMS PENDING TASKS BY PROCESS STEP -->
@@ -1250,7 +1265,7 @@
                             <span class="badge"
                                 th:text="${(fmsPendingTasksByStep != null and fmsPendingTasksByStep[step.stepProcess] != null ? #lists.size(fmsPendingTasksByStep[step.stepProcess]) : 0) + ' Records'}">0
                                 Records</span>
-                            <button class="action-btn primary action-btn-small" onclick="submitBulkCompletion()"
+                            <button class="action-btn primary action-btn-small" onclick="submitBulkCompletion(this)"
                                 style="margin-right: 8px; background: #10b981;">
                                 Submit
                             </button>
@@ -1278,7 +1293,7 @@
                                         2026-01-01</td>
                                     <td class="text-center">
                                         <span class="status-badge"
-                                            th:classappend="${#strings.toLowerCase(task.status) == 'completed' ? 'completed' : #strings.toLowerCase(task.status) == 'overdue' ? 'overdue' : #strings.toLowerCase(task.status) == 'delayed' ? 'delayed' : 'on-time'}"
+                                            th:classappend="${#strings.toLowerCase(task.status) == 'completed' ? 'completed' : #strings.toLowerCase(task.status) == 'in progress' ? 'in-progress' : #strings.toLowerCase(task.status) == 'overdue' ? 'overdue' : #strings.toLowerCase(task.status) == 'delayed' ? 'delayed' : 'on-time'}"
                                             th:text="${task.status}">On Time</span>
                                     </td>
                                     <td class="text-center">
@@ -1520,7 +1535,7 @@
 
         // CHART.JS INITIALIZATION
         function initChart() {
-            let data = dashboardStats && dashboardStats.chart_data ? dashboardStats.chart_data.filter(d => d.name !== 'In Progress') : [];
+            let data = dashboardStats && dashboardStats.chart_data ? dashboardStats.chart_data : [];
             let otcScore = dashboardStats && dashboardStats.otc_score ? dashboardStats.otc_score : '0%';
 
             // Check if data is empty or all values are 0
@@ -1555,7 +1570,15 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    cutout: '75%', // Thinner ring like functionality
+                    cutout: '75%',
+                    animation: {
+                        duration: 2000,
+                        easing: 'easeOutQuart'
+                    },
+                    hover: {
+                        mode: 'nearest',
+                        intersect: true
+                    },
                     plugins: {
                         legend: {
                             display: false
@@ -1709,7 +1732,8 @@
 
         // SELECT ALL CHECKBOXES FOR FMS PENDING TASKS
         function selectAllFmsPending(selectAllCheckbox) {
-            const checkboxes = document.querySelectorAll('.fms-pending-checkbox');
+            const container = selectAllCheckbox.closest('.table-container');
+            const checkboxes = container.querySelectorAll('.fms-pending-checkbox');
             checkboxes.forEach(checkbox => {
                 checkbox.checked = selectAllCheckbox.checked;
             });
@@ -1717,19 +1741,24 @@
 
         // SELECT ALL CHECKBOXES FOR FMS COMPLETED TASKS
         function selectAllFmsCompleted(selectAllCheckbox) {
-            const checkboxes = document.querySelectorAll('.fms-completed-checkbox');
+            const container = selectAllCheckbox.closest('.table-container');
+            const checkboxes = container.querySelectorAll('.fms-completed-checkbox');
             checkboxes.forEach(checkbox => {
                 checkbox.checked = selectAllCheckbox.checked;
             });
         }
 
         // SUBMIT BULK COMPLETION
-        function submitBulkCompletion() {
-            // Get checked boxes from FMS pending section
-            const fmsPendingChecked = document.querySelectorAll('.fms-pending-checkbox:checked');
+        function submitBulkCompletion(btn) {
+            // Get the specific table container for this step
+            const container = btn.closest('.table-container');
+            if (!container) return;
+
+            // Get checked boxes ONLY within this container
+            const fmsPendingChecked = container.querySelectorAll('.fms-pending-checkbox:checked');
 
             if (fmsPendingChecked.length === 0) {
-                alert('Please select at least one task to mark as completed.');
+                alert('Please select at least one task to mark as completed in this step.');
                 return;
             }
 
@@ -1778,8 +1807,8 @@
                     console.log('Response data:', data);
                     if (data && data.success) {
                         alert('Success! ' + data.updatedCount + ' task(s) marked as completed.');
-                        // Clear checkboxes
-                        document.querySelectorAll('.fms-pending-checkbox:checked').forEach(cb => cb.checked = false);
+                        // Clear checkboxes in this container
+                        fmsPendingChecked.forEach(cb => cb.checked = false);
                         // Refresh the page to see updated statuses
                         setTimeout(() => location.reload(), 500);
                     } else {

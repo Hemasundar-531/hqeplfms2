@@ -148,8 +148,8 @@ public class EmployeeController {
             List<String> responsibleOptions = new ArrayList<>();
             List<com.company.flowmanagement.model.Employee> allEmployees = employeeRepository.findAll();
             for (var emp : allEmployees) {
-                if (emp.getName() != null && !emp.getName().isBlank() && 
-                    (emp.getStatus() == null || !emp.getStatus().equals("Deleted"))) {
+                if (emp.getName() != null && !emp.getName().isBlank() &&
+                        (emp.getStatus() == null || !emp.getStatus().equals("Deleted"))) {
                     responsibleOptions.add(emp.getName());
                 }
             }
@@ -333,8 +333,8 @@ public class EmployeeController {
         List<String> responsibleOptions = new ArrayList<>();
         List<com.company.flowmanagement.model.Employee> allEmployees = employeeRepository.findAll();
         for (var emp : allEmployees) {
-            if (emp.getName() != null && !emp.getName().isBlank() && 
-                (emp.getStatus() == null || !emp.getStatus().equals("Deleted"))) {
+            if (emp.getName() != null && !emp.getName().isBlank() &&
+                    (emp.getStatus() == null || !emp.getStatus().equals("Deleted"))) {
                 responsibleOptions.add(emp.getName());
             }
         }
@@ -754,8 +754,6 @@ public class EmployeeController {
                 chartData.add(Map.of("name", "Delayed", "value", fmsDelayed, "color", "#f59e0b"));
             if (fmsOverdueCount > 0)
                 chartData.add(Map.of("name", "Overdue", "value", fmsOverdueCount, "color", "#ef4444"));
-            if (fmsInProgress > 0)
-                chartData.add(Map.of("name", "In Progress", "value", fmsInProgress, "color", "#3b82f6"));
 
             Map<String, Object> fmsDashboardStats = new java.util.HashMap<>();
             fmsDashboardStats.put("totalTasks", fmsTotal);
