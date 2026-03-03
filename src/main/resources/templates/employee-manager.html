@@ -1275,14 +1275,8 @@
                             const emp = employees.find(e => e.id === employeeId);
                             if (emp) {
                                 emp.permissions = permissions;
-                                // Re-render table to update "Assigned to" status for everyone
-                                renderTable(employees);
-
-                                // Restore dropdown state if needed? 
-                                // Actually, re-rendering might close dropdowns. 
-                                // Let's try to keep the dropdown open or at least just rely on the re-render.
-                                // The re-render will close the dropdown, but that might be acceptable or we can just update the `takenOrderEntry` logic more surgically.
-                                // For now, full re-render is safest to ensure consistency.
+                                // Re-render table removed to keep dropdown open
+                                // renderTable(employees); 
                             }
                         }
 
