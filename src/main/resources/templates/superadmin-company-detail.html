@@ -1004,11 +1004,7 @@
     <nav class="navbar">
         <div style="display:flex;align-items:center;">
             <a href="/superadmin/dashboard" class="nav-brand">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                    stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
-                </svg>
-                HereQuality
+                Dashboard
             </a>
             <div class="nav-links">
                 <a href="/superadmin/dashboard" class="nav-item">Dashboard</a>
@@ -1041,12 +1037,7 @@
                     </svg>
                 </a>
                 <div class="company-info">
-                    <img th:if="${admin.companyLogo != null}" th:src="${admin.companyLogo}" alt="Logo"
-                        class="company-logo">
-                    <div th:unless="${admin.companyLogo != null}" class="company-logo-placeholder">
-                        <span
-                            th:text="${(admin.companyName != null ? admin.companyName : admin.username).substring(0,1).toUpperCase()}">C</span>
-                    </div>
+
                     <div>
                         <h1 class="company-title"
                             th:text="${admin.companyName != null ? admin.companyName : admin.username}">Company Name

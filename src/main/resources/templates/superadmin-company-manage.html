@@ -529,11 +529,7 @@
     <nav class="navbar">
         <div style="display:flex;align-items:center;">
             <a href="/superadmin/dashboard" class="nav-brand">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                    stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
-                </svg>
-                HereQuality
+                Dashboard
             </a>
             <div class="nav-links">
                 <a href="/superadmin/dashboard" class="nav-item">Dashboard</a>
@@ -580,7 +576,7 @@
                                 <th>Company Name</th>
                                 <th>Email</th>
                                 <th>Password</th>
-                                <th>Logo</th>
+
                                 <th>Status</th>
                                 <th>Action</th>
                             </tr>
@@ -622,10 +618,7 @@
                                         </button>
                                     </div>
                                 </td>
-                                <td class="logo-cell">
-                                    <img th:if="${admin.companyLogo != null}" th:src="${admin.companyLogo}" alt="Logo">
-                                    <div th:unless="${admin.companyLogo != null}" class="no-logo">N/A</div>
-                                </td>
+
                                 <td>
                                     <select class="status-select status-active" th:data-id="${admin.id}"
                                         onchange="updateStatus(this)">
@@ -699,12 +692,7 @@
                                     name="companyName" required>
                             </div>
 
-                            <div class="col-md-6">
-                                <label for="manageEditCompanyLogo" class="form-label small fw-bold">Company Logo <span
-                                        class="text-muted fw-normal">(Optional)</span></label>
-                                <input type="file" class="form-control form-control-sm" id="manageEditCompanyLogo"
-                                    name="companyLogo" accept="image/*">
-                            </div>
+
 
                             <div class="col-md-6">
                                 <label for="manageEditEmail" class="form-label small fw-bold">Email (Username)</label>
