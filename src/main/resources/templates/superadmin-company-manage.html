@@ -326,12 +326,6 @@
             border-color: #FCD34D;
         }
 
-        .status-select.status-edit {
-            background: #DBEAFE;
-            color: #1E40AF;
-            border-color: #93C5FD;
-        }
-
         .action-btns {
             display: flex;
             gap: 8px;
@@ -620,11 +614,11 @@
                                 </td>
 
                                 <td>
-                                    <select class="status-select status-active" th:data-id="${admin.id}"
-                                        onchange="updateStatus(this)">
-                                        <option value="Active" selected>Active</option>
-                                        <option value="Hold">Hold</option>
-                                        <option value="Edit">Edit</option>
+                                    <select
+                                        th:class="'status-select ' + (${admin.status == 'Hold'} ? 'status-hold' : 'status-active')"
+                                        th:data-id="${admin.id}" onchange="updateStatus(this)">
+                                        <option value="Active" th:selected="${admin.status != 'Hold'}">Active</option>
+                                        <option value="Hold" th:selected="${admin.status == 'Hold'}">Hold</option>
                                     </select>
                                 </td>
                                 <td>
@@ -783,12 +777,34 @@
             }
         }
 
-        function updateStatus(select) {
+        async function updateStatus(select) {
             const val = select.value;
+            const adminId = select.getAttribute('data-id');
+            const originalClassName = select.className;
+            const originalVal = val === 'Active' ? 'Hold' : 'Active';
+
+            // Optimistic UI update
             select.className = 'status-select';
             if (val === 'Active') select.classList.add('status-active');
             else if (val === 'Hold') select.classList.add('status-hold');
-            else if (val === 'Edit') select.classList.add('status-edit');
+
+            try {
+                const res = await fetch(`/superadmin/api/company-manage/${adminId}/status`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: val })
+                });
+
+                if (!res.ok) {
+                    throw new Error('Failed to update status');
+                }
+            } catch (err) {
+                console.error(err);
+                alert("Failed to update status. Reverting.");
+                // Revert
+                select.value = originalVal;
+                select.className = originalClassName;
+            }
         }
     </script>
 </body>

@@ -640,6 +640,16 @@ public class EmployeeController {
                                 taskMap.put("status", status);
                                 taskMap.put("pdf", "");
 
+                                // Add remarks and completion file
+                                String stepRemark = (plan.getStepRemarks() != null)
+                                        ? plan.getStepRemarks().get(stepName)
+                                        : null;
+                                String stepFile = (plan.getStepCompletionFiles() != null)
+                                        ? plan.getStepCompletionFiles().get(stepName)
+                                        : null;
+                                taskMap.put("remarks", stepRemark != null ? stepRemark : "");
+                                taskMap.put("completionFile", stepFile != null ? stepFile : "");
+
                                 // Categorize Overdue
                                 if (taskMap.get("targetDate") != null && !taskMap.get("targetDate").equals("-")) {
                                     try {
@@ -770,7 +780,9 @@ public class EmployeeController {
     @ResponseBody
     public org.springframework.http.ResponseEntity<?> completeFmsStep(
             @RequestParam("planningEntryId") String planningEntryId,
-            @RequestParam("stepName") String stepName) {
+            @RequestParam("stepName") String stepName,
+            @RequestParam(value = "remarks", required = false) String remarks,
+            @RequestParam(value = "file", required = false) org.springframework.web.multipart.MultipartFile file) {
         try {
             Optional<com.company.flowmanagement.model.PlanningEntry> optPlan = planningEntryRepository
                     .findById(planningEntryId);
@@ -795,9 +807,34 @@ public class EmployeeController {
             if (plan.getStepCompletionDates() == null) {
                 plan.setStepCompletionDates(new java.util.HashMap<>());
             }
+            if (plan.getStepRemarks() == null) {
+                plan.setStepRemarks(new java.util.HashMap<>());
+            }
+            if (plan.getStepCompletionFiles() == null) {
+                plan.setStepCompletionFiles(new java.util.HashMap<>());
+            }
 
             plan.getStepStatuses().put(stepName, "Completed");
             plan.getStepCompletionDates().put(stepName, LocalDate.now().toString());
+
+            if (remarks != null && !remarks.isBlank()) {
+                plan.getStepRemarks().put(stepName, remarks.trim());
+            }
+
+            if (file != null && !file.isEmpty()) {
+                try {
+                    String uploadDir = "uploads/tasks/";
+                    java.nio.file.Path uploadPath = java.nio.file.Paths.get(uploadDir);
+                    if (!java.nio.file.Files.exists(uploadPath)) {
+                        java.nio.file.Files.createDirectories(uploadPath);
+                    }
+                    String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+                    java.nio.file.Files.copy(file.getInputStream(), uploadPath.resolve(fileName));
+                    plan.getStepCompletionFiles().put(stepName, fileName);
+                } catch (Exception fileEx) {
+                    System.err.println("File upload error for FMS step: " + fileEx.getMessage());
+                }
+            }
 
             planningEntryRepository.save(plan);
             return org.springframework.http.ResponseEntity.ok(Map.of("success", true));

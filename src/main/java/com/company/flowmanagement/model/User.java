@@ -14,6 +14,7 @@ public class User {
     private String username;
     private String password;
     private String rawPassword;
+    private boolean enabled = true; // false = Hold or Deleted (cannot log in)
     private String role; // ADMIN, ORDER, EMPLOYEE
 
     private ArrayList<String> permissions = new ArrayList<>();
@@ -23,6 +24,7 @@ public class User {
     private String customerName;
     private String companyLogo; // Path to uploaded file
     private String email;
+    private String status = "Active"; // Active or Hold
 
     public String getId() {
         return id;
@@ -54,6 +56,14 @@ public class User {
 
     public void setRawPassword(String rawPassword) {
         this.rawPassword = rawPassword;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 
     public String getRole() {
@@ -102,5 +112,13 @@ public class User {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

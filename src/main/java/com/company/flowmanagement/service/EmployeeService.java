@@ -162,7 +162,18 @@ public class EmployeeService {
         return context;
     }
 
+    /**
+     * Returns only Active and Hold employees — Deleted are excluded from normal
+     * lists.
+     */
     public java.util.List<Employee> getAllEmployees() {
+        return employeeRepository.findAll().stream()
+                .filter(e -> !"Deleted".equalsIgnoreCase(e.getStatus()))
+                .collect(java.util.stream.Collectors.toList());
+    }
+
+    /** Returns all employees including Deleted — for admin view only. */
+    public java.util.List<Employee> getAllEmployeesIncludingDeleted() {
         return employeeRepository.findAll();
     }
 
@@ -170,6 +181,9 @@ public class EmployeeService {
         if (adminId == null || adminId.isBlank()) {
             return new java.util.ArrayList<>();
         }
-        return employeeRepository.findByAdminId(adminId);
+        // Exclude Deleted employees from active task assignment lists
+        return employeeRepository.findByAdminId(adminId).stream()
+                .filter(e -> !"Deleted".equalsIgnoreCase(e.getStatus()))
+                .collect(java.util.stream.Collectors.toList());
     }
 }

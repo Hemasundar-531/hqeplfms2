@@ -18,6 +18,8 @@ public class PlanningEntry {
     private java.util.Map<String, String> stepResponsiblePersons = new java.util.HashMap<>();
     private java.util.Map<String, String> stepStatuses = new java.util.HashMap<>();
     private java.util.Map<String, String> stepCompletionDates = new java.util.HashMap<>();
+    private java.util.Map<String, String> stepRemarks = new java.util.HashMap<>();
+    private java.util.Map<String, String> stepCompletionFiles = new java.util.HashMap<>();
     private Instant createdAt;
 
     public String getId() {
@@ -82,6 +84,22 @@ public class PlanningEntry {
 
     public void setStepCompletionDates(java.util.Map<String, String> stepCompletionDates) {
         this.stepCompletionDates = stepCompletionDates;
+    }
+
+    public java.util.Map<String, String> getStepRemarks() {
+        return stepRemarks;
+    }
+
+    public void setStepRemarks(java.util.Map<String, String> stepRemarks) {
+        this.stepRemarks = stepRemarks;
+    }
+
+    public java.util.Map<String, String> getStepCompletionFiles() {
+        return stepCompletionFiles;
+    }
+
+    public void setStepCompletionFiles(java.util.Map<String, String> stepCompletionFiles) {
+        this.stepCompletionFiles = stepCompletionFiles;
     }
 
     public Instant getCreatedAt() {

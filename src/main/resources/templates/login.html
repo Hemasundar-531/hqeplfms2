@@ -578,10 +578,24 @@
                 <p>Please enter your credentials to access your dashboard.</p>
             </div>
 
-            <!-- Error Message -->
+            <!-- Error Message - wrong credentials -->
             <div th:if="${param.error}" class="error-message">
                 <i class="fa-solid fa-circle-exclamation"></i>
                 <span>Invalid username or password. Please try again.</span>
+            </div>
+
+            <!-- Error Message - account disabled (Hold or Deleted) -->
+            <div th:if="${param.disabled}" class="error-message"
+                style="background: #fff7ed; border-color: #fed7aa; color: #c2410c;">
+                <i class="fa-solid fa-ban"></i>
+                <span>Your account has been suspended or deactivated. Please contact your administrator.</span>
+            </div>
+
+            <!-- Error Message - company disabled (Hold) -->
+            <div th:if="${param.companyHold}" class="error-message"
+                style="background: #fff7ed; border-color: #fed7aa; color: #c2410c;">
+                <i class="fa-solid fa-ban"></i>
+                <span>Your company account is temporarily on hold. Please contact the administrator.</span>
             </div>
 
             <div th:if="${param.logout}" class="error-message"

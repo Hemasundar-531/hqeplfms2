@@ -36,9 +36,9 @@ public class EmployeePermissionInterceptor implements HandlerInterceptor {
         String requestURI = request.getRequestURI();
 
         // Allow dashboard, login, and error page without permission check
-        if (requestURI.equals("/employee/dashboard") || 
-            requestURI.equals("/login") || 
-            requestURI.equals("/error")) {
+        if (requestURI.equals("/employee/dashboard") ||
+                requestURI.equals("/login") ||
+                requestURI.equals("/error")) {
             return true;
         }
 

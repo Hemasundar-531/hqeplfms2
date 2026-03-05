@@ -4,11 +4,14 @@ import com.company.flowmanagement.security.CustomUserDetailsService;
 import com.company.flowmanagement.repository.UserRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 @Configuration
@@ -19,7 +22,7 @@ public class SecurityConfig {
     private final UserRepository userRepository;
 
     public SecurityConfig(CustomUserDetailsService userDetailsService,
-                          UserRepository userRepository) {
+            UserRepository userRepository) {
         this.userDetailsService = userDetailsService;
         this.userRepository = userRepository;
     }
@@ -50,15 +53,14 @@ public class SecurityConfig {
                         .hasAnyRole("EMPLOYEE", "ADMIN", "SUPERADMIN")
 
                         // All other requests need authentication
-                        .anyRequest().authenticated()
-                )
+                        .anyRequest().authenticated())
 
                 // Login config
                 .formLogin(form -> form
                         .loginPage("/login")
                         .successHandler(authenticationSuccessHandler())
-                        .permitAll()
-                )
+                        .failureHandler(authenticationFailureHandler())
+                        .permitAll())
 
                 // Logout config
                 .logout(logout -> logout
@@ -66,8 +68,7 @@ public class SecurityConfig {
                         .logoutSuccessUrl("/login?logout")
                         .invalidateHttpSession(true)
                         .deleteCookies("JSESSIONID")
-                        .permitAll()
-                );
+                        .permitAll());
 
         // Set custom user service
         http.userDetailsService(userDetailsService);
@@ -110,8 +111,22 @@ public class SecurityConfig {
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder() {
+    public AuthenticationFailureHandler authenticationFailureHandler() {
+        return (request, response, exception) -> {
+            // Distinguish Disabled (employee Hold/Deleted) and Locked (company Hold) from
+            // wrong credentials
+            if (exception instanceof LockedException || (exception.getCause() instanceof LockedException)) {
+                response.sendRedirect("/login?companyHold");
+            } else if (exception instanceof DisabledException || (exception.getCause() instanceof DisabledException)) {
+                response.sendRedirect("/login?disabled");
+            } else {
+                response.sendRedirect("/login?error");
+            }
+        };
+    }
 
+    @Bean
+    public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 }

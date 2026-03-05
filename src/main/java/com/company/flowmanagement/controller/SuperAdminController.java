@@ -280,7 +280,7 @@ public class SuperAdminController {
             return "redirect:/superadmin/company-detail/" + adminId + "/folder/" + folderId;
         }
         String redirect = employeeController.submitPlanning(postedFolderId, orderId, startDate, responsiblePersons,
-            targetDates);
+                targetDates);
         return rewriteOrderEntryRedirect(adminId, folderId, employeeId, redirect);
     }
 
@@ -681,6 +681,38 @@ public class SuperAdminController {
         }
 
         admin.setPermissions(perms);
+        userRepository.save(admin);
+
+        return org.springframework.http.ResponseEntity.ok().build();
+    }
+
+    @org.springframework.web.bind.annotation.PatchMapping("/api/company-manage/{id}/status")
+    @ResponseBody
+    public org.springframework.http.ResponseEntity<?> updateCompanyStatus(
+            @org.springframework.web.bind.annotation.PathVariable("id") String id,
+            @RequestBody Map<String, String> body) {
+
+        String newStatus = body.get("status");
+        if (newStatus == null || (!newStatus.equals("Active") && !newStatus.equals("Hold"))) {
+            return org.springframework.http.ResponseEntity.badRequest()
+                    .body(java.util.Collections.singletonMap("error", "Invalid status"));
+        }
+
+        User admin = userRepository.findById(id).orElse(null);
+        if (admin == null || !"ADMIN".equals(admin.getRole())) {
+            return org.springframework.http.ResponseEntity.badRequest()
+                    .body(java.util.Collections.singletonMap("error", "Company not found"));
+        }
+
+        admin.setStatus(newStatus);
+
+        // Also toggle enabled flag so Spring Security catches it
+        if ("Hold".equals(newStatus)) {
+            admin.setEnabled(false);
+        } else {
+            admin.setEnabled(true);
+        }
+
         userRepository.save(admin);
 
         return org.springframework.http.ResponseEntity.ok().build();

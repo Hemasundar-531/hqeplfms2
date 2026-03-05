@@ -460,7 +460,8 @@
                     <div class="nav-section-title">Task Manager</div>
                     <ul class="nav-list">
                         <li>
-                            <a th:href="@{/employee/task-manager}" class="nav-item" data-page="task-manager">
+                            <a th:href="@{/employee/task-manager}" class="nav-item" data-page="task-manager"
+                                title="Task Manager">
                                 <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                     stroke-width="2">
                                     <path d="M9 11l3 3L22 4" />
@@ -475,7 +476,8 @@
                 <th:block th:with="hasFms=${fmsFolders != null and !fmsFolders.isEmpty()}">
                     <div class="nav-section" th:if="${hasFms}">
                         <div class="nav-section-title">FMS Modules</div>
-                        <button type="button" class="nav-item has-submenu" onclick="toggleSubmenu(this)">
+                        <button type="button" class="nav-item has-submenu" onclick="toggleSubmenu(this)"
+                            title="FMS Modules">
                             <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                 stroke-width="2">
                                 <path d="M3 7h5l2 2h11v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z" />
@@ -489,7 +491,7 @@
                         <ul class="submenu">
                             <li th:each="folder : ${fmsFolders}">
                                 <a th:href="@{/employee/fms/{folderId}(folderId=${folder.id})}" class="nav-item"
-                                    th:data-page="|fms/${folder.id}|">
+                                    th:data-page="|fms/${folder.id}|" th:title="${folder.name}">
                                     <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                         stroke-width="2">
                                         <path
@@ -506,7 +508,8 @@
                     <div class="nav-section-title">Order Entry</div>
                     <ul class="nav-list">
                         <li>
-                            <button type="button" class="nav-item has-submenu" onclick="toggleSubmenu(this)">
+                            <button type="button" class="nav-item has-submenu" onclick="toggleSubmenu(this)"
+                                title="Order Entry">
                                 <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                     stroke-width="2">
                                     <path
@@ -525,7 +528,7 @@
 
                                 <li th:each="folder : ${orderEntryFolders}">
                                     <a th:href="@{/employee/order-entry(folderId=${folder.id})}" class="nav-item"
-                                        th:data-page="|order-entry?folderId=${folder.id}|">
+                                        th:data-page="|order-entry?folderId=${folder.id}|" th:title="${folder.name}">
                                         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                             stroke-width="2">
                                             <path
@@ -562,7 +565,7 @@
                     </div>
                 </div>
                 <form th:action="@{/logout}" method="post" style="margin: 0;">
-                    <button type="submit" class="logout-btn">
+                    <button type="submit" class="logout-btn" title="Logout">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
                             <polyline points="16 17 21 12 16 7" />
@@ -578,6 +581,7 @@
             function toggleSidebar() {
                 const sidebar = document.getElementById('empSidebar');
                 const mainContent = document.querySelector('.emp-main-content');
+                const toggleBtn = document.querySelector('.sidebar-toggle');
 
                 // On mobile, use overlay drawer behavior instead of mini-collapse.
                 if (window.innerWidth <= 1024) {
@@ -588,7 +592,11 @@
                 sidebar.classList.toggle('collapsed');
                 if (mainContent) mainContent.classList.toggle('sidebar-collapsed');
 
-                localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed'));
+                const isCollapsed = sidebar.classList.contains('collapsed');
+                if (toggleBtn) {
+                    toggleBtn.title = isCollapsed ? 'Expand Sidebar' : 'Collapse Sidebar';
+                }
+                localStorage.setItem('sidebarCollapsed', isCollapsed);
             }
 
             function toggleMobileSidebar() {

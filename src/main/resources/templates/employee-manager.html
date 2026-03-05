@@ -194,6 +194,40 @@
             border: 1px solid #cfd6dd;
         }
 
+        /* Status select color coding */
+        .status-select {
+            padding: 5px 10px;
+            border-radius: 20px;
+            border: none;
+            font-weight: 600;
+            font-size: 12px;
+            cursor: pointer;
+            outline: none;
+        }
+
+        .status-select.status-active {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .status-select.status-hold {
+            background: #fef9c3;
+            color: #854d0e;
+        }
+
+        .status-select.status-deleted {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        tr.row-deleted td {
+            opacity: 0.55;
+        }
+
+        tr.row-deleted td:nth-child(6) {
+            opacity: 1;
+        }
+
         /* Modal */
         .modal {
             display: none;
@@ -827,10 +861,10 @@
                 <div class="modal-content">
                     <h3 id="modalTitle">Add Employee</h3>
                     <input type="hidden" id="empId" />
-                    <input type="text" id="empName" placeholder="Employee Name">
-                    <input type="email" id="empEmail" placeholder="Email Address">
-                    <input type="text" id="empDept" placeholder="Department">
-                    <input type="password" id="empPassword" placeholder="Password">
+                    <input type="text" id="empName" placeholder="Employee Name" required>
+                    <input type="email" id="empEmail" placeholder="Email Address" required>
+                    <input type="text" id="empDept" placeholder="Department" required>
+                    <input type="password" id="empPassword" placeholder="Password (leave blank to keep current)">
                     <!-- Status removed, defaults to Active -->
 
                     <!-- Permissions section removed as per request -->
@@ -868,6 +902,7 @@
                     document.getElementById("empEmail").value = "";
                     document.getElementById("empDept").value = "";
                     document.getElementById("empPassword").value = "";
+                    document.getElementById("empPassword").placeholder = "Password";
 
                     // Clear permissions
                     document.getElementById("permOrderEntry").checked = false;
@@ -1012,7 +1047,7 @@
                     }).join('');
 
                     return `
-        <tr data-employee-id="${emp.id}">
+        <tr data-employee-id="${emp.id}" class="${(emp.status || 'Active') === 'Deleted' ? 'row-deleted' : ''}">
             <td>${idx + 1}</td>
             <td>${escapeHtml(emp.name || '')}</td>
             <td>${escapeHtml(emp.email || '')}</td>
@@ -1035,8 +1070,11 @@
             </td>
             <td>${escapeHtml(emp.department || '')}</td>
             <td>
-                <select class="status-select" data-employee-id="${emp.id}" onchange="onStatusChange(this)">
-                    <option value="Active" ${(emp.status || '') === 'Active' ? 'selected' : ''}>Active</option>
+                <select class="status-select status-${(emp.status || 'Active').toLowerCase()}" 
+                        data-employee-id="${emp.id}" 
+                        onchange="onStatusChange(this)"
+                        style="">
+                    <option value="Active" ${(emp.status || 'Active') === 'Active' ? 'selected' : ''}>Active</option>
                     <option value="Hold" ${(emp.status || '') === 'Hold' ? 'selected' : ''}>Hold</option>
                     <option value="Deleted" ${(emp.status || '') === 'Deleted' ? 'selected' : ''}>Deleted</option>
                 </select>
@@ -1081,7 +1119,7 @@
                     <button type="button" class="row-action-trigger" onclick="toggleActionDropdown(this, event)" aria-haspopup="true" aria-expanded="false">Actions</button>
                     <div class="row-action-dropdown" onclick="event.stopPropagation()">
                         <button type="button" class="row-action-item" onclick='closeActionMenus(); editEmployee(${JSON.stringify(emp).replace(/'/g, "&#39;")})'>Edit Employee</button>
-                        <button type="button" class="row-action-item danger" onclick='closeActionMenus(); deleteEmployee("${emp.id}")'>Delete Employee</button>
+                        <button type="button" class="row-action-item danger" onclick='closeActionMenus(); deleteEmployee("${emp.id}", "${escapeHtml(emp.name || '')}")'>Delete Employee</button>
                     </div>
                 </div>
             </td>
@@ -1100,8 +1138,8 @@
                     });
                 }
 
-                async function deleteEmployee(empId) {
-                    if (!confirm("Are you sure you want to delete this employee? This action cannot be undone.")) {
+                async function deleteEmployee(empId, empName) {
+                    if (!confirm(`Delete "${empName}"? This will remove their login access permanently.`)) {
                         return;
                     }
 
@@ -1111,17 +1149,10 @@
                         });
 
                         if (res.ok) {
-                            // Find row and remove it from UI
-                            const row = document.querySelector(`tr[data-employee-id="${empId}"]`);
-                            const tbody = document.getElementById("employeeTableBody");
-                            const currentRowCount = tbody.rows.length;
-                            // const newRowHtml = renderEmployeeRowV2(data, currentRowCount);
-                            // tbody.insertAdjacentHTML('beforeend', newRowHtml);
-                            // updateSerialNumbers();
-                            loadEmployees(); // Reload table
+                            loadEmployees();
                             return;
                         } else {
-                            const data = await res.json();
+                            const data = await res.json().catch(() => ({}));
                             alert(data.error || "Failed to delete employee.");
                         }
                     } catch (e) {
@@ -1289,92 +1320,135 @@
                 }
 
                 async function onStatusChange(selectEl) {
-                    if (selectEl.value === 'Deleted') {
-                        const ok = confirm('Are you sure you want to set this employee as Deleted?');
+                    const newStatus = selectEl.value;
+                    const employeeId = selectEl.getAttribute('data-employee-id');
+                    const prevStatus = [...selectEl.options].find(o => o.defaultSelected)?.value || 'Active';
+
+                    if (newStatus === 'Deleted') {
+                        const ok = confirm('Set this employee as Deleted? They will no longer be able to log in.');
                         if (!ok) {
-                            selectEl.value = 'Active';
+                            selectEl.value = prevStatus;
+                            return;
+                        }
+                    } else if (newStatus === 'Hold') {
+                        const ok = confirm('Put this employee on Hold? They will be temporarily unable to log in.');
+                        if (!ok) {
+                            selectEl.value = prevStatus;
                             return;
                         }
                     }
-                    const employeeId = selectEl.getAttribute('data-employee-id');
-                    const row = document.querySelector(`tr[data-employee-id="${employeeId}"]`);
-                    const name = row?.cells[1]?.textContent?.trim() || '';
-                    const department = row?.cells[2]?.textContent?.trim() || '';
+
                     try {
-                        const res = await fetch(`${API_BASE}/${employeeId}`, {
-                            method: 'PUT',
+                        const res = await fetch(`${API_BASE}/${employeeId}/status`, {
+                            method: 'PATCH',
                             headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                name,
-                                department,
-                                status: selectEl.value,
-                                permissions: getPermissionPayload(employeeId) || {}
-                            })
+                            body: JSON.stringify({ status: newStatus })
                         });
                         if (!res.ok) throw new Error('Failed to update status');
+
+                        // Update color class
+                        selectEl.className = `status-select status-${newStatus.toLowerCase()}`;
+
+                        // Dim row if Deleted
+                        const row = document.querySelector(`tr[data-employee-id="${employeeId}"]`);
+                        if (row) {
+                            row.classList.toggle('row-deleted', newStatus === 'Deleted');
+                        }
+
+                        // Mark the selected option as the new default
+                        [...selectEl.options].forEach(o => { o.defaultSelected = o.value === newStatus; });
+
                     } catch (e) {
                         console.error(e);
+                        selectEl.value = prevStatus;
                         alert('Failed to update status. Please try again.');
                     }
                 }
 
-                function editEmployee(id) {
-                    alert("Edit functionality is currently disabled as we transition to the new email/password structure. Please delete and re-create the employee if needed for now.");
+                function editEmployee(emp) {
+                    document.getElementById("modalTitle").textContent = "Edit Employee";
+                    document.getElementById("empId").value = emp.id || '';
+                    document.getElementById("empName").value = emp.name || '';
+                    document.getElementById("empEmail").value = emp.email || '';
+                    document.getElementById("empDept").value = emp.department || '';
+                    document.getElementById("empPassword").value = '';
+                    document.getElementById("empPassword").placeholder = "New password (leave blank to keep current)";
+                    document.getElementById("employeeModal").style.display = "flex";
                 }
 
                 async function saveEmployee() {
-                    const name = document.getElementById("empName").value;
-                    const email = document.getElementById("empEmail").value;
-                    const dept = document.getElementById("empDept").value;
-                    const password = document.getElementById("empPassword").value;
-                    const status = "Active"; // Default status
+                    const id = document.getElementById("empId").value;
+                    const name = document.getElementById("empName").value.trim();
+                    const email = document.getElementById("empEmail").value.trim();
+                    const dept = document.getElementById("empDept").value.trim();
+                    const password = document.getElementById("empPassword").value.trim();
+                    const isEdit = id !== '';
 
-                    if (!name || !dept || !email || !password) {
-                        alert("Name, Email, Department, and Password are required");
+                    if (!name || !dept) {
+                        alert("Name and Department are required.");
+                        return;
+                    }
+                    if (!isEdit && (!email || !password)) {
+                        alert("Email and Password are required when adding a new employee.");
                         return;
                     }
 
-                    // Collect permissions from checkboxes
-                    const permissions = [];
-                    if (document.getElementById('permOrderEntry').checked) {
-                        permissions.push('ORDER_ENTRY');
-                    }
-
-                    // Collect FMS folder permissions
-                    document.querySelectorAll('.fms-folder-checkbox:checked').forEach(cb => {
-                        const folderId = cb.getAttribute('data-folder-id');
-                        if (folderId) {
-                            permissions.push(`FMS:${folderId}`);
-                        }
-                    });
-
-                    console.log('Creating employee with permissions:', permissions);
                     hideMessage("employeeErrorMessage");
-                    try {
-                        var res = await fetch(API_BASE, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                name: name,
-                                email: email,
-                                department: dept,
-                                status: status,
-                                permissions: permissions,
-                                password: password
-                            })
-                        });
-                        var data = {};
-                        try { data = await res.json(); } catch (e) { }
-                        if (res.ok) {
-                            closeModal();
-                            showSuccessMessage();
-                            loadEmployees(); // Reload table
-                            return;
+
+                    if (isEdit) {
+                        // ---- UPDATE (PUT) ----
+                        const payload = { name, department: dept };
+                        if (email) payload.email = email;
+                        if (password) payload.password = password;
+
+                        try {
+                            const res = await fetch(`${API_BASE}/${id}`, {
+                                method: 'PUT',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify(payload)
+                            });
+                            const data = await res.json().catch(() => ({}));
+                            if (res.ok) {
+                                closeModal();
+                                showSuccessMessage();
+                                loadEmployees();
+                                return;
+                            }
+                            showErrorMessage(data.error || 'Failed to update employee.');
+                        } catch (e) {
+                            console.error(e);
+                            showErrorMessage('Failed to update employee. Please try again.');
                         }
-                        showErrorMessage(data.error || "Failed to add employee. Please try again.");
-                    } catch (e) {
-                        console.error(e);
-                        showErrorMessage("Failed to add employee. Please try again.");
+                    } else {
+                        // ---- CREATE (POST) ----
+                        const status = "Active";
+                        const permissions = [];
+                        if (document.getElementById('permOrderEntry').checked) {
+                            permissions.push('ORDER_ENTRY');
+                        }
+                        document.querySelectorAll('.fms-folder-checkbox:checked').forEach(cb => {
+                            const folderId = cb.getAttribute('data-folder-id');
+                            if (folderId) permissions.push(`FMS:${folderId}`);
+                        });
+
+                        try {
+                            const res = await fetch(API_BASE, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ name, email, department: dept, status, permissions, password })
+                            });
+                            const data = await res.json().catch(() => ({}));
+                            if (res.ok) {
+                                closeModal();
+                                showSuccessMessage();
+                                loadEmployees();
+                                return;
+                            }
+                            showErrorMessage(data.error || 'Failed to add employee. Please try again.');
+                        } catch (e) {
+                            console.error(e);
+                            showErrorMessage('Failed to add employee. Please try again.');
+                        }
                     }
                 }
 

@@ -1307,6 +1307,8 @@
                                 <th>Resp. Person</th>
                                 <th>Target Date</th>
                                 <th class="text-center">Status</th>
+                                <th>Remarks</th>
+                                <th>File</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -1322,9 +1324,20 @@
                                         th:classappend="${#strings.toLowerCase(task.status) == 'delayed' ? 'delayed' : 'completed'}"
                                         th:text="${task.status}">Completed</span>
                                 </td>
+                                <td th:text="${task.remarks != null and !task.remarks.isEmpty() ? task.remarks : '-'}"
+                                    style="max-width: 200px; white-space: pre-wrap;">-</td>
+                                <td>
+                                    <a th:if="${task.completionFile != null and !task.completionFile.isEmpty()}"
+                                        th:href="${'/uploads/tasks/' + task.completionFile}" target="_blank"
+                                        style="color: #3b82f6; text-decoration: none; font-size: 11px; font-weight: 600;">
+                                        📎 View File
+                                    </a>
+                                    <span th:unless="${task.completionFile != null and !task.completionFile.isEmpty()}"
+                                        style="color: #94a3b8;">-</span>
+                                </td>
                             </tr>
                             <tr th:if="${fmsCompletedTasks == null or fmsCompletedTasks.isEmpty()}">
-                                <td colspan="7" class="text-center" style="padding: 20px; color: #94a3b8;">No completed
+                                <td colspan="9" class="text-center" style="padding: 20px; color: #94a3b8;">No completed
                                     tasks found.
                                 </td>
                             </tr>
@@ -1355,10 +1368,13 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form id="completeForm">
+                <form id="completeForm" enctype="multipart/form-data">
+                    <input type="hidden" id="completePlanningEntryId">
+                    <input type="hidden" id="completeStepName">
                     <div class="form-group">
-                        <label class="form-label">Task ID</label>
-                        <input type="text" class="form-control" id="completeTaskId" placeholder="Enter Task ID">
+                        <label class="form-label">Task</label>
+                        <input type="text" class="form-control" id="completeTaskLabel" readonly
+                            style="background:#f8fafc;">
                     </div>
                     <div class="form-group">
                         <label class="form-label">Remarks / Work Description</label>
@@ -1367,13 +1383,13 @@
                     </div>
                     <div class="form-group mb-0">
                         <label class="form-label">Upload Proof (Optional)</label>
-                        <input type="file" class="form-control" id="completeFile" accept=".pdf">
+                        <input type="file" class="form-control" id="completeFile" accept=".pdf,.jpg,.jpeg,.png">
                     </div>
                 </form>
             </div>
             <div class="modal-actions">
                 <button type="button" class="modal-btn secondary" onclick="closeCompleteModal()">Cancel</button>
-                <button type="submit" form="completeForm" class="modal-btn primary">Submit Report</button>
+                <button type="button" class="modal-btn primary" onclick="submitFmsCompletion()">Submit Report</button>
             </div>
         </div>
     </div>
@@ -1474,7 +1490,9 @@
                     datasets: [{
                         data: values,
                         backgroundColor: colors,
-                        borderWidth: 0
+                        borderRadius: 0,
+                        borderWidth: 1,
+                        spacing: 0
                     }]
                 },
                 options: {
@@ -1539,32 +1557,58 @@
         }
 
         // Mark FMS process step as Completed when tick button is clicked
-        async function completeFmsStep(btn, planningEntryId, stepName) {
-            if (!confirm(`Mark "${stepName}" as Completed?`)) return;
+        function completeFmsStep(btn, planningEntryId, stepName) {
+            // Store context and open the completion modal
+            document.getElementById('completePlanningEntryId').value = planningEntryId;
+            document.getElementById('completeStepName').value = stepName;
+            document.getElementById('completeTaskLabel').value = stepName;
+            document.getElementById('completeRemarks').value = '';
+            document.getElementById('completeFile').value = '';
 
-            btn.disabled = true;
-            btn.style.opacity = '0.5';
+            // Store originating button reference for post-submit update
+            window._fmsCompletingBtn = btn;
+            document.getElementById('completeModal').classList.add('show');
+        }
+
+        async function submitFmsCompletion() {
+            const planningEntryId = document.getElementById('completePlanningEntryId').value;
+            const stepName = document.getElementById('completeStepName').value;
+            const remarks = (document.getElementById('completeRemarks')?.value || '').trim();
+            const fileInput = document.getElementById('completeFile');
+
+            if (!remarks) {
+                alert('Please add remarks before submitting.');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('planningEntryId', planningEntryId);
+            formData.append('stepName', stepName);
+            formData.append('remarks', remarks);
+            if (fileInput && fileInput.files.length > 0) {
+                formData.append('file', fileInput.files[0]);
+            }
 
             try {
-                const params = new URLSearchParams({ planningEntryId, stepName });
-                const response = await fetch(`/employee/fms/api/complete-step?${params}`, {
-                    method: 'PATCH'
+                const response = await fetch('/employee/fms/api/complete-step', {
+                    method: 'PATCH',
+                    body: formData
                 });
                 if (response.ok) {
-                    btn.style.background = '#16a34a';
-                    btn.style.color = '#fff';
-                    btn.style.opacity = '1';
+                    closeCompleteModal();
+                    if (window._fmsCompletingBtn) {
+                        window._fmsCompletingBtn.style.background = '#16a34a';
+                        window._fmsCompletingBtn.style.color = '#fff';
+                        window._fmsCompletingBtn.style.opacity = '1';
+                        window._fmsCompletingBtn.disabled = true;
+                    }
                     setTimeout(() => window.location.reload(), 600);
                 } else {
                     const err = await response.json().catch(() => ({}));
                     alert(err.error || 'Failed to complete step.');
-                    btn.disabled = false;
-                    btn.style.opacity = '1';
                 }
             } catch (e) {
                 alert('Network error. Please try again.');
-                btn.disabled = false;
-                btn.style.opacity = '1';
             }
         }
 
