@@ -401,13 +401,24 @@ public class EmployeeController {
                 int planningSr = 1;
                 for (var step : config.getProcessDetails()) {
                     var row = new LinkedHashMap<String, String>();
+                    String stepName = step.getStepProcess();
                     row.put("sr", String.valueOf(planningSr++));
-                    row.put("stepProcess", step.getStepProcess());
-                    row.put("responsiblePerson", step.getResponsiblePerson());
+                    row.put("stepProcess", stepName);
+
+                    // Fetch responsible person from PlanningEntry, fallback to O2DConfig
+                    String resp = (planningEntry.getStepResponsiblePersons() != null)
+                            ? planningEntry.getStepResponsiblePersons().get(stepName)
+                            : null;
+                    if (resp == null || resp.isBlank()) {
+                        resp = step.getResponsiblePerson();
+                    }
+                    row.put("responsiblePerson", resp != null ? resp : "-");
+
                     row.put("targetType", step.getTargetType());
                     row.put("days", step.getDays() == null ? "" : String.valueOf(step.getDays()));
+
                     String savedTargetDate = planningEntry.getStepTargetDates() != null
-                            ? planningEntry.getStepTargetDates().get(step.getStepProcess())
+                            ? planningEntry.getStepTargetDates().get(stepName)
                             : null;
                     if (savedTargetDate != null && !savedTargetDate.isBlank()) {
                         row.put("targetDate", savedTargetDate);
@@ -416,7 +427,15 @@ public class EmployeeController {
                     } else {
                         row.put("targetDate", "-");
                     }
-                    row.put("status", step.getStatus() != null ? step.getStatus() : "Pending");
+
+                    // Fetch status from PlanningEntry, fallback to Pending
+                    String status = (planningEntry.getStepStatuses() != null)
+                            ? planningEntry.getStepStatuses().get(stepName)
+                            : null;
+                    if (status == null || status.isBlank()) {
+                        status = "Pending";
+                    }
+                    row.put("status", status);
                     rows.add(row);
                 }
             } catch (Exception ignored) {
