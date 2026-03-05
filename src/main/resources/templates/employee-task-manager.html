@@ -1681,19 +1681,12 @@
                     <h3>My Function Tasks</h3>
                     <div class="table-header-actions">
                         <span class="badge" id="myTasksCount" th:text="${myTasks.size() + ' Records'}">0 Records</span>
-                        <button class="action-btn primary action-btn-small" onclick="submitBulkCompletion()"
-                            style="margin-right: 8px; background: #10b981;">
-                            Submit
-                        </button>
                     </div>
                 </div>
                 <div class="table-scroll">
                     <table>
                         <thead>
                             <tr>
-                                <th>
-                                    <input type="checkbox" id="selectAllMyTasks">
-                                </th>
                                 <th>Task ID</th>
                                 <th>Task</th>
                                 <th>Project / Client</th>
@@ -1706,7 +1699,6 @@
                         </thead>
                         <tbody id="myTasksBody">
                             <tr th:each="task : ${myTasks}">
-                                <td><input type="checkbox" class="task-checkbox" th:value="${task.taskId}"></td>
                                 <td class="task-id" th:text="${task.taskId}">TSK-001</td>
                                 <td class="task-title" th:text="${task.title}">Prepare Q1 Report</td>
                                 <td class="task-meta" th:text="${task.projectName + ' / ' + task.clientName}">Project
@@ -1748,7 +1740,7 @@
                                 </td>
                             </tr>
                             <tr th:if="${#lists.isEmpty(myTasks)}">
-                                <td colspan="10" class="text-center" style="padding: 40px; color: #64748b;">
+                                <td colspan="9" class="text-center" style="padding: 40px; color: #64748b;">
                                     No active tasks found.
                                 </td>
                             </tr>
