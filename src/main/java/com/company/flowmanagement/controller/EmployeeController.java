@@ -250,26 +250,19 @@ public class EmployeeController {
                 // --- Calculate Overall Status from individual planning entry ---
                 String displayStatus = planningStatusAttr;
                 if (orderPlan != null) {
-                    boolean allStepCompleted = true;
-
                     Map<String, String> statuses = orderPlan.getStepStatuses();
                     List<ProcessStep> configSteps = config.getProcessDetails();
 
-                    if (configSteps != null && !configSteps.isEmpty()) {
-                        for (ProcessStep step : configSteps) {
-                            String s = (statuses != null) ? statuses.get(step.getStepProcess()) : null;
-                            if (!"Completed".equalsIgnoreCase(s)) {
-                                allStepCompleted = false;
-                            }
+                    if (configSteps != null && !configSteps.isEmpty() && statuses != null) {
+                        ProcessStep lastStep = configSteps.get(configSteps.size() - 1);
+                        String lastStepStatus = statuses.get(lastStep.getStepProcess());
+                        if ("Completed".equalsIgnoreCase(lastStepStatus)) {
+                            displayStatus = "Completed";
+                        } else {
+                            displayStatus = "Planned";
                         }
                     } else {
-                        allStepCompleted = false;
-                    }
-
-                    if (allStepCompleted) {
-                        displayStatus = "Completed";
-                    } else {
-                        // If we have a PlanningEntry, it's "Planned"
+                        // configSteps null/empty or statuses null → default to Planned
                         displayStatus = "Planned";
                     }
                 }

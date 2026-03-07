@@ -939,6 +939,17 @@
                         assigned order details and process configurations.</p>
                 </div>
                 <div class="hero-actions">
+                    <a href="/superadmin/company-dashboard" class="hero-btn hero-btn-alt"
+                        style="text-decoration:none; display:inline-flex; align-items:center; gap:8px;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="3" width="7" height="7"></rect>
+                            <rect x="14" y="3" width="7" height="7"></rect>
+                            <rect x="3" y="14" width="7" height="7"></rect>
+                            <rect x="14" y="14" width="7" height="7"></rect>
+                        </svg>
+                        Company Level Dashboard
+                    </a>
                     <button class="hero-btn hero-btn-alt" data-bs-toggle="modal" data-bs-target="#createAdminModal">
                         + Create Admin
                     </button>
@@ -952,7 +963,7 @@
                 </div>
                 <div class="stat-card">
                     <div class="stat-label">Total Flows</div>
-                    <div class="stat-value" th:text="${#lists.size(folders)}">0</div>
+                    <div class="stat-value" th:text="${totalFlowCount}">0</div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-label">Control Plane</div>

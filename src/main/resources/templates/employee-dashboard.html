@@ -456,7 +456,6 @@
             <div class="topbar-right">
                 <div class="user-info">
                     <div class="name" th:text="${employeeName}">Employee Name</div>
-                    <div class="role">Employee</div>
                 </div>
                 <div class="user-avatar-small"
                     th:text="${employeeName != null and employeeName.length() > 0 ? #strings.toUpperCase(#strings.substring(employeeName, 0, 1)) : 'E'}">

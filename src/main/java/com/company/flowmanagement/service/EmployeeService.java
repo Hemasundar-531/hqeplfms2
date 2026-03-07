@@ -156,8 +156,22 @@ public class EmployeeService {
         context.put("employeeCompanyName", employeeCompanyName);
         context.put("permissions", finalPermissions);
         context.put("employee", employee);
-        context.put("fmsFolders", employeeFmsFolders);
-        context.put("orderEntryFolders", orderEntryFolders);
+
+        // SUPERADMIN OVERRIDE: Grant full visibility to all FMS folders and modules
+        User currentUser = userRepository.findByUsername(username);
+        if (currentUser != null && "ROLE_SUPERADMIN".equals(currentUser.getRole())) {
+            context.put("fmsFolders", allFmsFolders);
+            context.put("orderEntryFolders", allFmsFolders);
+            if (!finalPermissions.contains("TASK_MANAGER")) {
+                finalPermissions.add("TASK_MANAGER");
+            }
+            if (!finalPermissions.contains("ORDER_ENTRY")) {
+                finalPermissions.add("ORDER_ENTRY");
+            }
+        } else {
+            context.put("fmsFolders", employeeFmsFolders);
+            context.put("orderEntryFolders", orderEntryFolders);
+        }
 
         return context;
     }

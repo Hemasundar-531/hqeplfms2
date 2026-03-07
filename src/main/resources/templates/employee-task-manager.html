@@ -117,7 +117,8 @@
             transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .emp-main-content.sidebar-collapsed {
+        .emp-main-content.sidebar-collapsed,
+        .emp-main-content.superadmin-main {
             margin-left: 0;
         }
 
@@ -1516,7 +1517,7 @@
 
         <!-- MAIN CONTENT -->
         <!-- MAIN CONTENT -->
-        <main class="emp-main-content">
+        <main class="emp-main-content" th:classappend="${superadminView} ? ' superadmin-main' : ''">
             <!-- HEADER -->
             <div class="page-header">
                 <div>

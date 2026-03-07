@@ -460,8 +460,8 @@
                     <div class="nav-section-title">Task Manager</div>
                     <ul class="nav-list">
                         <li>
-                            <a th:href="@{/employee/task-manager}" class="nav-item" data-page="task-manager"
-                                title="Task Manager">
+                            <a th:href="${superadminView} ? '/superadmin/company-detail/' + ${adminId} + '/employee/' + ${selectedEmployee.id} + '/task-manager' : @{/employee/task-manager}"
+                                class="nav-item" data-page="task-manager" title="Task Manager">
                                 <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                     stroke-width="2">
                                     <path d="M9 11l3 3L22 4" />
@@ -490,8 +490,8 @@
                         </button>
                         <ul class="submenu">
                             <li th:each="folder : ${fmsFolders}">
-                                <a th:href="@{/employee/fms/{folderId}(folderId=${folder.id})}" class="nav-item"
-                                    th:data-page="|fms/${folder.id}|" th:title="${folder.name}">
+                                <a th:href="${superadminView} ? '/superadmin/company-detail/' + ${adminId} + '/folder/' + ${folder.id} + '/employee/' + ${selectedEmployee.id} + '/fms' : @{/employee/fms/{folderId}(folderId=${folder.id})}"
+                                    class="nav-item" th:data-page="|fms/${folder.id}|" th:title="${folder.name}">
                                     <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                         stroke-width="2">
                                         <path
@@ -527,8 +527,9 @@
                             <ul class="submenu">
 
                                 <li th:each="folder : ${orderEntryFolders}">
-                                    <a th:href="@{/employee/order-entry(folderId=${folder.id})}" class="nav-item"
-                                        th:data-page="|order-entry?folderId=${folder.id}|" th:title="${folder.name}">
+                                    <a th:href="${superadminView} ? '/superadmin/company-detail/' + ${adminId} + '/folder/' + ${folder.id} + '/employee/' + ${selectedEmployee.id} + '/order-entry' : @{/employee/order-entry(folderId=${folder.id})}"
+                                        class="nav-item" th:data-page="|order-entry?folderId=${folder.id}|"
+                                        th:title="${folder.name}">
                                         <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                             stroke-width="2">
                                             <path
@@ -542,13 +543,7 @@
                     </ul>
                 </div>
 
-                <th:block
-                    th:with="hasAny=${(permissions != null and permissions.contains('TASK_MANAGER')) or (fmsFolders != null and !fmsFolders.isEmpty()) or (orderEntryFolders != null and !orderEntryFolders.isEmpty())}">
-                    <div class="no-permissions" th:unless="${hasAny}">
-                        <p>No module permissions assigned yet.</p>
-                        <p>Contact your administrator.</p>
-                    </div>
-                </th:block>
+
             </nav>
 
             <div class="sidebar-footer">
@@ -664,8 +659,20 @@
 
                 const currentUrl = window.location.href;
                 document.querySelectorAll('.nav-item[data-page]').forEach(function (item) {
-                    if (currentUrl.includes(item.getAttribute('data-page'))) {
+                    const page = item.getAttribute('data-page');
+                    // For direct employee routes
+                    if (currentUrl.includes('/employee/' + page)) {
                         item.classList.add('active');
+                    }
+                    // For Super Admin proxy routes
+                    else if (currentUrl.includes('/superadmin/')) {
+                        if (page === 'task-manager' && currentUrl.includes('/task-manager')) {
+                            item.classList.add('active');
+                        } else if (page.startsWith('fms/') && currentUrl.includes('/folder/' + page.split('/')[1]) && currentUrl.endsWith('/fms')) {
+                            item.classList.add('active');
+                        } else if (page.startsWith('order-entry') && currentUrl.includes('/folder/' + page.split('=')[1]) && currentUrl.includes('/order-entry')) {
+                            item.classList.add('active');
+                        }
                     }
                 });
 

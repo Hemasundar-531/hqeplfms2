@@ -885,7 +885,7 @@
 <body>
     <div class="app-shell">
         <!-- Sidebar Segment -->
-        <th:block th:if="${superadminView != true}" th:replace="~{fragments/employee-sidebar :: sidebar}"></th:block>
+        <th:block th:replace="~{fragments/employee-sidebar :: sidebar}"></th:block>
 
         <main class="emp-main-content" th:classappend="${superadminView} ? ' superadmin-main' : ''">
             <div class="page">

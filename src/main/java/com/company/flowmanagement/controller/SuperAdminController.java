@@ -16,6 +16,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.security.core.Authentication;
+import com.company.flowmanagement.repository.EmployeeRepository;
+
+// Fixed Super Admin proxy navigation and missing sidebar entries.
+// Also fixed compilation errors that caused server startup failure.
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -33,19 +38,22 @@ public class SuperAdminController {
     private final UserRepository userRepository;
     private final O2DConfigRepository o2dConfigRepository;
     private final PasswordEncoder passwordEncoder;
-    private final com.company.flowmanagement.repository.EmployeeRepository employeeRepository;
+    private final EmployeeRepository employeeRepository;
     private final EmployeeController employeeController;
+    private final TaskController taskController;
 
     public SuperAdminController(UserRepository userRepository,
             O2DConfigRepository o2dConfigRepository,
             PasswordEncoder passwordEncoder,
             com.company.flowmanagement.repository.EmployeeRepository employeeRepository,
-            EmployeeController employeeController) {
+            EmployeeController employeeController,
+            TaskController taskController) {
         this.userRepository = userRepository;
         this.o2dConfigRepository = o2dConfigRepository;
         this.passwordEncoder = passwordEncoder;
         this.employeeRepository = employeeRepository;
         this.employeeController = employeeController;
+        this.taskController = taskController;
     }
 
     @GetMapping("/dashboard")
@@ -80,9 +88,24 @@ public class SuperAdminController {
             adminFlows.put(admin.getId(), flows);
         }
 
+        // Calculate total assigned flows across all admins
+        int totalAssignedFlows = 0;
+        java.util.Set<String> assignedFolderIds = new java.util.HashSet<>();
+        for (User admin : admins) {
+            if (admin.getPermissions() != null) {
+                for (String perm : admin.getPermissions()) {
+                    if (perm.startsWith("ADMIN_FMS:")) {
+                        assignedFolderIds.add(perm.substring("ADMIN_FMS:".length()));
+                    }
+                }
+            }
+        }
+        totalAssignedFlows = assignedFolderIds.size();
+
         model.addAttribute("admins", admins);
         model.addAttribute("folders", folders);
         model.addAttribute("adminFlows", adminFlows);
+        model.addAttribute("totalFlowCount", totalAssignedFlows);
         return "superadmin-dashboard";
     }
 
@@ -91,6 +114,14 @@ public class SuperAdminController {
         List<User> admins = userRepository.findByRole("ADMIN");
         model.addAttribute("admins", admins);
         return "superadmin-company-manage";
+    }
+
+    @GetMapping("/company-dashboard")
+    public String companyDashboard(@RequestParam(name = "adminId", required = false) String adminId, Model model) {
+        List<User> admins = userRepository.findByRole("ADMIN");
+        model.addAttribute("admins", admins);
+        model.addAttribute("selectedAdminId", adminId);
+        return "superadmin-company-dashboard";
     }
 
     @GetMapping("/company-detail/{id}")
@@ -235,6 +266,62 @@ public class SuperAdminController {
         model.addAttribute("orderEntryPlanningStatusPath", basePath + "/planning-status");
         model.addAttribute("orderEntryFetchEntryPath", basePath + "/entry");
         return "employee-order-entry";
+    }
+
+    @GetMapping("/company-detail/{adminId}/employee/{employeeId}/task-manager")
+    public String employeeTaskManagerFromSuperAdmin(@PathVariable("adminId") String adminId,
+            @PathVariable("employeeId") String employeeId,
+            @RequestParam(name = "section", required = false) String section,
+            @RequestParam(name = "status", required = false) String status,
+            Model model) {
+        User admin = userRepository.findById(adminId).orElse(null);
+        if (admin == null) {
+            return "redirect:/superadmin/company-manage";
+        }
+
+        com.company.flowmanagement.model.Employee employee = employeeRepository.findById(employeeId).orElse(null);
+        if (employee == null || employee.getAdminId() == null || !adminId.equals(employee.getAdminId())) {
+            return "redirect:/superadmin/company-detail/" + adminId;
+        }
+
+        UsernamePasswordAuthenticationToken employeeAuth = new UsernamePasswordAuthenticationToken(
+                employee.getName(), null, java.util.List.of());
+
+        taskController.taskManager(model, employeeAuth);
+
+        model.addAttribute("admin", admin);
+        model.addAttribute("adminId", adminId);
+        model.addAttribute("selectedEmployee", employee);
+        model.addAttribute("superadminView", true);
+        return "employee-task-manager";
+    }
+
+    @GetMapping("/company-detail/{adminId}/folder/{folderId}/employee/{employeeId}/fms")
+    public String employeeFmsFromSuperAdmin(@PathVariable("adminId") String adminId,
+            @PathVariable("folderId") String folderId,
+            @PathVariable("employeeId") String employeeId,
+            Model model) {
+        User admin = userRepository.findById(adminId).orElse(null);
+        if (admin == null) {
+            return "redirect:/superadmin/company-manage";
+        }
+
+        com.company.flowmanagement.model.Employee employee = employeeRepository.findById(employeeId).orElse(null);
+        if (employee == null || employee.getAdminId() == null || !adminId.equals(employee.getAdminId())) {
+            return "redirect:/superadmin/company-detail/" + adminId;
+        }
+
+        UsernamePasswordAuthenticationToken employeeAuth = new UsernamePasswordAuthenticationToken(
+                employee.getName(), null, java.util.List.of());
+
+        employeeController.fmsDynamicFolder(folderId, model, employeeAuth);
+
+        model.addAttribute("admin", admin);
+        model.addAttribute("folderId", folderId);
+        model.addAttribute("adminId", adminId);
+        model.addAttribute("selectedEmployee", employee);
+        model.addAttribute("superadminView", true);
+        return "employee-fms-folder";
     }
 
     @GetMapping("/company-detail/{adminId}/folder/{folderId}/employee/{employeeId}/order-entry/entry")

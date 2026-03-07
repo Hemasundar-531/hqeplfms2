@@ -111,6 +111,10 @@
             transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
+        .emp-main-content.superadmin-main {
+            margin-left: 0;
+        }
+
         /* HEADER - Enhanced UI/UX */
         .page-header {
             background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
@@ -1085,7 +1089,7 @@
     <div class="app-shell">
         <th:block th:replace="~{fragments/employee-sidebar :: sidebar}"></th:block>
 
-        <main class="emp-main-content">
+        <main class="emp-main-content" th:classappend="${superadminView} ? ' superadmin-main' : ''">
             <!-- PAGE HEADER -->
             <div class="page-header">
                 <div class="header-left">
